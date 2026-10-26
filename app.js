@@ -33,7 +33,7 @@ function draw(t) {
   $('trail').style.strokeDashoffset=1-p.cycleFraction;
  } else {
   const expansion=p.index===0?p.fraction:1-p.fraction;
-  $('balloon').style.transform=`scale(${reducedMotion.matches ? .85 : .66 + .34*expansion})`;
+  $('balloon').style.transform=`scale(${reducedMotion.matches ? 1.1 : .66 + .64*expansion})`;
  }
 }
 function complete(){
