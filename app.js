@@ -46,11 +46,22 @@ function tick(now){
  if(t>=minutes*60){complete();return;}
  draw(t);frame=requestAnimationFrame(tick);
 }
+function enterFullscreen(){
+ // Installed apps request fullscreen through the manifest. Browsers that fall
+ // back to a window can enter fullscreen after the student's existing click.
+ if(document.fullscreenElement || matchMedia('(display-mode: fullscreen)').matches) return;
+ if(!document.documentElement.requestFullscreen || document.fullscreenEnabled === false) return;
+ try {
+  const request = document.documentElement.requestFullscreen({navigationUI:'hide'});
+  if(request && typeof request.catch === 'function') request.catch(()=>{});
+ } catch {} // Unsupported or denied fullscreen must never block the exercise.
+}
 function start(){
+ enterFullscreen();
  status='running';elapsed=0;lastPhase=-1;anchor=performance.now();
  $('action').textContent='Enda';draw(0);frame=requestAnimationFrame(tick);
 }
-$('choices').addEventListener('submit',event=>{event.preventDefault();location.hash='aefing';});
+$('choices').addEventListener('submit',event=>{event.preventDefault();enterFullscreen();location.hash='aefing';});
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.mode;configure();}));
 document.querySelectorAll('[data-minutes]').forEach(b=>b.addEventListener('click',()=>{minutes=Number(b.dataset.minutes);configure();}));
 $('action').addEventListener('click',()=>{
@@ -69,7 +80,7 @@ document.addEventListener('visibilitychange',()=>{
 });
 window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;});
 window.addEventListener('appinstalled',()=>{$('install').hidden=true;installPrompt=null;});
-if(matchMedia('(display-mode: standalone)').matches||navigator.standalone)$('install').hidden=true;
+if(matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone)$('install').hidden=true;
 $('install').addEventListener('click',async()=>{
  if(installPrompt){const prompt=installPrompt;installPrompt=null;await prompt.prompt();return;}
  $('install-help').showModal();

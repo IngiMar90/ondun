@@ -31,6 +31,12 @@ npm test
 
 Opnaðu síðuna í Chrome/Edge á Chromebook, Windows eða Android og veldu **Setja upp app**. Á iPhone/iPad: Safari → Deila → Bæta á heimaskjá. Stýrð skólatæki geta haft takmarkanir á uppsetningu. HTTPS eða localhost þarf fyrir þjónustuþráð. Offline-virkni er tilbúin þegar fyrsta opnun hefur náð að vista skrárnar.
 
+## Heilskjár
+
+Uppsetta appið óskar eftir fullscreen við opnun í manifest.webmanifest. Stuðningur fer eftir vafra og stýrikerfi; annars notar vafrinn standalone eða næsta studda ham. Þegar ýtt er á Áfram eða Byrja óskar appið einnig eftir heilskjá með Fullscreen API ef það er stutt. Enginn aukahnappur er á æfingaskjánum og synjun stöðvar ekki æfinguna. Esc getur lokað heilskjá; appið þvingar notandann ekki aftur í hann án nýs smells. Enda fer aftur á valið og heldur heilskjánum.
+
+Eldri uppsetningar geta þurft að vera lokaðar og opnaðar aftur eftir uppfærslu. Vafrinn stjórnar hvenær nýjar manifest-stillingar taka gildi; ef þær festast í gömlum ham má setja appið upp aftur.
+
 ## Viðhald
 
 Við breytingar á skrám skal hækka CACHE-heitið í sw.js. Ný útgáfa tekur við þegar eldri opnum gluggum er lokað og appið opnað aftur. Allar slóðir eru afstæðar og virka undir /ondun/.
