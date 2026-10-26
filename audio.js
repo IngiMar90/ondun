@@ -1,14 +1,14 @@
 // Soft bell cues made locally with Web Audio; no recordings or network requests.
 export function makeBell(context,frequency){
- const duration=1.8;
+ const duration=4;
  const buffer=context.createBuffer(1,Math.ceil(context.sampleRate*duration),context.sampleRate);
  const data=buffer.getChannelData(0);
  for(let i=0;i<data.length;i++){
   const t=i/context.sampleRate;
   const attack=Math.min(1,t/.025);
-  const fade=Math.min(1,(duration-t)/.25);
-  const fundamental=.28*Math.sin(2*Math.PI*frequency*t)*Math.exp(-t/.55);
-  const overtone=.055*Math.sin(2*Math.PI*frequency*2.01*t)*Math.exp(-t/.3);
+  const fade=Math.min(1,(duration-t)/.02);
+  const fundamental=.28*Math.sin(2*Math.PI*frequency*t)*Math.exp(-t/12);
+  const overtone=.055*Math.sin(2*Math.PI*frequency*2.01*t)*Math.exp(-t/3);
   data[i]=(fundamental+overtone)*attack*fade;
  }
  data[data.length-1]=0;
@@ -16,23 +16,28 @@ export function makeBell(context,frequency){
 }
 export function scheduleBreaths(context,buffers,mode,total,offset=0,when=context.currentTime){
  const nodes=[];
- for(let phase=Math.ceil(offset/4);phase*4<total;phase++){
+ for(let phase=Math.floor(offset/4);phase*4<total;phase++){
   const index=phase%(mode==='box'?4:2);
   if(mode==='box'&&(index===1||index===3))continue;
-  const at=when+phase*4-offset;
+  const from=Math.max(offset,phase*4);
+  const within=from-phase*4;
+  const at=when+from-offset;
   const source=context.createBufferSource();
   source.buffer=index===0?buffers.inhale:buffers.exhale;
-  const duration=Math.min(source.buffer.duration,total-phase*4);
+  const duration=Math.min(source.buffer.duration-within,total-from);
   if(duration<=0)continue;
   const gain=context.createGain();
-  gain.gain.setValueAtTime(.85,at);
+  if(within>0){
+   gain.gain.setValueAtTime(0,at);
+   gain.gain.linearRampToValueAtTime(.85,at+Math.min(.02,duration/3));
+  }else gain.gain.setValueAtTime(.85,at);
   // Also fade if the overall session cuts a bell short.
   const fade=Math.min(.02,duration/2);
   gain.gain.setValueAtTime(.85,at+duration-fade);
   gain.gain.linearRampToValueAtTime(0,at+duration);
   source.connect(gain).connect(context.destination);
   source.onended=()=>{source.disconnect();gain.disconnect();};
-  source.start(at,0,duration);source.stop(at+duration);
+  source.start(at,within,duration);source.stop(at+duration);
   nodes.push(source);
  }
  return nodes;

@@ -7,6 +7,7 @@ let minutes = [1,2,3,4,5].includes(saved.minutes) ? saved.minutes : 1;
 let soundEnabled=saved.sound!==false;
 const breathAudio=new BreathingAudio();
 let audioReady=false, sessionId=0;
+let countdownElapsed=0, countdownAnchor=0;
 let status = 'idle', elapsed = 0, anchor = 0, frame = 0, lastPhase = -1, installPrompt;
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 function configure() {
@@ -20,6 +21,7 @@ function reset() {
  sessionId++; breathAudio.stop();
  cancelAnimationFrame(frame); status='idle'; elapsed=0; lastPhase=-1;
  $('phase').textContent=''; $('action').textContent='Byrja';
+ countdownElapsed=0;$('countdown').hidden=true;$('countdown').textContent='';
  $('trail').style.strokeDashoffset=1; $('dot').setAttribute('cx',28); $('dot').setAttribute('cy',28);
  $('balloon').style.transform='scale(.66)';
 }
@@ -63,20 +65,35 @@ function enterFullscreen(){
   if(request && typeof request.catch === 'function') request.catch(()=>{});
  } catch {} // Unsupported or denied fullscreen must never block the exercise.
 }
+function beginExercise(){
+ $('countdown').hidden=true;$('countdown').textContent='';
+ status='running';elapsed=0;lastPhase=-1;anchor=performance.now();
+ if(audioReady)breathAudio.play(mode,minutes*60);
+ draw(0);frame=requestAnimationFrame(tick);
+}
+function countdownTick(now){
+ if(status!=='countdown')return;
+ const t=countdownElapsed+(now-countdownAnchor)/1000;
+ if(t>=3){beginExercise();return;}
+ $('countdown').textContent=String(Math.ceil(3-t));
+ frame=requestAnimationFrame(countdownTick);
+}
+function beginCountdown(){
+ countdownElapsed=0;countdownAnchor=performance.now();
+ $('countdown').textContent='3';$('countdown').hidden=false;
+ status=document.hidden?'countdown-suspended':'countdown';
+ if(status==='countdown')frame=requestAnimationFrame(countdownTick);
+}
 async function start(){
  const session=++sessionId;
  status='starting';$('action').textContent='Enda';
- // Unlock sound in the original click before fullscreen can consume activation.
+ // Unlock sound in the original click; countdown itself remains silent.
  const ready=soundEnabled ? breathAudio.prepare() : Promise.resolve(false);
  enterFullscreen();
  const prepared=await ready;
  if(session!==sessionId||status!=='starting')return;
  audioReady=prepared;
- elapsed=0;lastPhase=-1;anchor=performance.now();
- if(document.hidden){status='suspended';return;}
- status='running';
- if(audioReady)breathAudio.play(mode,minutes*60);
- draw(0);frame=requestAnimationFrame(tick);
+ beginCountdown();
 }
 $('sound').addEventListener('change',()=>{soundEnabled=$('sound').checked;configure();});
 $('choices').addEventListener('submit',event=>{event.preventDefault();enterFullscreen();location.hash='aefing';});
@@ -89,7 +106,13 @@ $('action').addEventListener('click',()=>{
 window.addEventListener('hashchange',route);
 // Hidden tabs pause silently; returning continues from the same point.
 document.addEventListener('visibilitychange',()=>{
- if(document.hidden&&status==='running'){
+ if(document.hidden&&status==='countdown'){
+  countdownElapsed+=(performance.now()-countdownAnchor)/1000;
+  status='countdown-suspended';cancelAnimationFrame(frame);
+ }else if(!document.hidden&&status==='countdown-suspended'){
+  status='countdown';countdownAnchor=performance.now();
+  frame=requestAnimationFrame(countdownTick);
+ }else if(document.hidden&&status==='running'){
   elapsed=Math.min(minutes*60,breathAudio.active ? breathAudio.position() : elapsed+(performance.now()-anchor)/1000);
   breathAudio.stop();
   status='suspended';cancelAnimationFrame(frame);
