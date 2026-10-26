@@ -1,5 +1,5 @@
 import {phaseAt, boxPoint} from './breathing.js';
-import {BreathingAudio} from './audio.js';
+import {BreathingAudio,volumeRange} from './audio.js';
 const $ = id => document.getElementById(id);
 let saved = {}; try { saved = JSON.parse(localStorage.getItem('ondun-settings')) || {}; } catch {}
 let mode = saved.mode === 'equal' ? 'equal' : 'box';
@@ -17,7 +17,10 @@ function configure() {
  document.querySelectorAll('[data-minutes]').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.minutes) === minutes)));
  $('box-visual').hidden = mode !== 'box'; $('balloon-visual').hidden = mode !== 'equal';
  $('sound').checked=soundEnabled;
- $('volume').value=Math.round(volume*100);$('volume-value').textContent=`${Math.round(volume*100)}%`;
+ const {low,high}=volumeRange(volume);
+ const range=low===high?`${Math.round(low*100)}%`:`${Math.round(low*100)}–${Math.round(high*100)}%`;
+ $('volume').value=Math.round(volume*100);$('volume-value').textContent=range;
+ $('volume').setAttribute('aria-valuetext',range);
  $('volume').disabled=!soundEnabled;$('preview-sound').disabled=!soundEnabled;
  breathAudio.setVolume(volume);
  try { localStorage.setItem('ondun-settings', JSON.stringify({mode, minutes, sound:soundEnabled,volume})); } catch {}

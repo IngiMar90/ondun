@@ -40,6 +40,29 @@ export function scheduleBreaths(context,buffers,mode,total,offset=0,when=context
  }
  return nodes;
 }
+export function volumeRange(value){
+ const low=Math.max(0,Math.min(1,Number(value)||0));
+ return {low,high:low===0?0:Math.min(1,low+.05)};
+}
+export function scheduleVolume(context,param,mode,total,offset,when,volume,smooth=false){
+ const {low,high}=volumeRange(volume);
+ const previous=param.value;
+ param.cancelScheduledValues(context.currentTime);
+ param.setValueAtTime(smooth?previous:low,context.currentTime);
+ for(let phase=Math.floor(offset/4);phase*4<total;phase++){
+  const index=phase%(mode==='box'?4:2);
+  if(mode==='box'&&(index===1||index===3))continue;
+  const from=Math.max(offset,phase*4),to=Math.min(total,(phase+1)*4);
+  if(to<=from)continue;
+  const at=when+from-offset,end=when+to-offset;
+  const level=fraction=>index===0?low+(high-low)*fraction:high-(high-low)*fraction;
+  if(smooth&&from===offset){
+   const transition=Math.min(.03,(to-from)/2);
+   param.linearRampToValueAtTime(level((from-phase*4+transition)/4),at+transition);
+  }else param.setValueAtTime(level((from-phase*4)/4),at);
+  param.linearRampToValueAtTime(level((to-phase*4)/4),end);
+ }
+}
 export class BreathingAudio {
  constructor(){this.context=null;this.buffers=null;this.nodes=[];this.active=false;this.volume=.2;this.master=null;}
  async prepare(){
@@ -61,17 +84,22 @@ export class BreathingAudio {
   this.stop();
   if(!this.context || !this.buffers || this.context.state==='closed')return;
   if(this.context.state!=='running')this.context.resume().catch(()=>{});
-  this.base=this.context.currentTime+.025;this.offset=offset;
+  this.base=this.context.currentTime+.025;this.offset=offset;this.mode=mode;this.total=total;
+  scheduleVolume(this.context,this.master.gain,mode,total,offset,this.base,this.volume);
   try{this.nodes=scheduleBreaths(this.context,this.buffers,mode,total,offset,this.base,this.master);this.active=true;}catch{this.stop();}
  }
  setVolume(value){
   this.volume=Math.max(0,Math.min(1,Number(value)||0));
-  if(this.master)this.master.gain.setTargetAtTime(this.volume,this.context.currentTime,.03);
+  if(this.master){
+   if(this.active)scheduleVolume(this.context,this.master.gain,this.mode,this.total,this.position(),this.context.currentTime,this.volume,true);
+   else {this.master.gain.cancelScheduledValues(this.context.currentTime);this.master.gain.setValueAtTime(this.volume,this.context.currentTime);}
+  }
  }
  position(){return this.offset+Math.max(0,this.context.currentTime-this.base);}
  stop(){
   this.active=false;
   for(const source of this.nodes){try{source.stop();}catch{}}
   this.nodes=[];
+  if(this.master){this.master.gain.cancelScheduledValues(this.context.currentTime);this.master.gain.setValueAtTime(this.volume,this.context.currentTime);}
  }
 }
