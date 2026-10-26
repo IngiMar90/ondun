@@ -5,10 +5,13 @@ Létt íslenskt öndunarforrit fyrir skóladaginn, án innskráningar, auglýsin
 - Kassaöndun: 4 sekúndur inn, halda 4, út 4, halda 4. Punktur fylgir hliðum kassans réttsælis.
 - Jöfn öndun: 4 sekúndur inn og 4 út. Blaðra stækkar og minnkar með önduninni.
 - Lengd 1–5 mínútur; síðasta val vistast aðeins í tækinu.
-- Hlé, áframhald, stöðvun og heilskjár. Æfing fer sjálfkrafa í hlé þegar flipi er falinn.
-- Nákvæmur heildartími; við lok birtist skilaboð um að æfingu sé lokið, jafnvel þótt öndunarumferð sé ekki fullkláruð.
+- Fyrsti skjár: velja æfingu og tíma, síðan Áfram.
+- Æfingaskjár (#aefing): aðeins öndunarform, stutt leiðsögn um núverandi skref og lítill Byrja-hnappur í neðra hægra horni. Eftir upphaf er Enda eini hnappurinn.
+- Enginn tímamælir, talning, framvinduslá, fyrirsögn eða valmynd á æfingaskjá.
+- Enda skilar á valið. Við tímamörk stöðvast æfingin með textanum „Æfingu lokið“ og nemandinn velur sjálfur hvenær hann fer til baka.
+- Æfing stöðvast tímabundið þegar flipi er falinn og heldur áfram þegar komið er til baka. Bakktakki vafra fer af æfingaskjá og stöðvar tímann.
 - Uppsetjanlegt PWA með staðbundnum táknum og þjónustuþræði fyrir notkun án nets eftir fyrstu vistun.
-- Kerfisstilling fyrir minni hreyfingu stöðvar stækkun blöðrunnar; texti og talning halda áfram.
+- Kerfisstilling fyrir minni hreyfingu stöðvar stækkun blöðrunnar; stutt leiðsögn um innöndun og útöndun helst sýnileg.
 
 ## Keyra staðbundið
 
