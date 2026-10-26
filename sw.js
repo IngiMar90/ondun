@@ -1,4 +1,4 @@
-const CACHE='ondun-v9-countdown';
+const CACHE='ondun-v10-pure-tone';
 const ASSETS=['./','./index.html','./style.css','./app.js','./breathing.js','./audio.js','./manifest.webmanifest','./icons/icon.svg','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS.map(url=>new Request(url,{cache:'reload'})))).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('ondun-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));

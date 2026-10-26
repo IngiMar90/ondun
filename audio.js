@@ -1,4 +1,4 @@
-// Soft bell cues made locally with Web Audio; no recordings or network requests.
+// Pure, steady sine tones with short click-prevention fades only at the edges.
 export function makeBell(context,frequency){
  const duration=4;
  const buffer=context.createBuffer(1,Math.ceil(context.sampleRate*duration),context.sampleRate);
@@ -7,9 +7,7 @@ export function makeBell(context,frequency){
   const t=i/context.sampleRate;
   const attack=Math.min(1,t/.025);
   const fade=Math.min(1,(duration-t)/.02);
-  const fundamental=.28*Math.sin(2*Math.PI*frequency*t)*Math.exp(-t/12);
-  const overtone=.055*Math.sin(2*Math.PI*frequency*2.01*t)*Math.exp(-t/3);
-  data[i]=(fundamental+overtone)*attack*fade;
+  data[i]=.24*Math.sin(2*Math.PI*frequency*t)*attack*fade;
  }
  data[data.length-1]=0;
  return buffer;

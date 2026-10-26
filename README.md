@@ -4,7 +4,7 @@ Létt íslenskt öndunarforrit fyrir skóladaginn, án innskráningar, auglýsin
 
 - Kassaöndun: 4 sekúndur inn, halda 4, út 4, halda 4. Punktur fylgir hliðum kassans réttsælis.
 - Jöfn öndun: 4 sekúndur inn og 4 út. Blaðra stækkar og minnkar með önduninni.
-- Mjúkur bjöllutónn við upphaf innöndunar (660 Hz) og lægri við upphaf útöndunar (528 Hz). Hver tónn heyrist í allar fjórar sekúndur inn- eða útöndunar með örstuttri mýkingu við endana til að forðast smelli; algjör þögn í öndunarhléum. Hljóðmerki eru sjálfvalin en má slökkva á valskjá; valið vistast í tækinu. Tónarnir eru búnir til staðbundið með Web Audio og virka án nets. Hljóð og mynd nota sömu klukku. Hljóð stöðvast við Enda, lok tíma, bakktakka og falinn flipa. Þegar haldið er áfram í miðju öndunarskrefi heldur tónninn áfram frá sama stað.
+- Hreinn, jafn sínustónn við innöndun (660 Hz) og lægri við útöndun (528 Hz), án yfirtóna, púlsunar eða sveiflna í styrk. Hver tónn heyrist í allar fjórar sekúndur inn- eða útöndunar með örstuttri mýkingu við endana til að forðast smelli; algjör þögn í öndunarhléum. Hljóðmerki eru sjálfvalin en má slökkva á valskjá; valið vistast í tækinu. Tónarnir eru búnir til staðbundið með Web Audio og virka án nets. Hljóð og mynd nota sömu klukku. Hljóð stöðvast við Enda, lok tíma, bakktakka og falinn flipa. Þegar haldið er áfram í miðju öndunarskrefi heldur tónninn áfram frá sama stað.
 - Lengd 1–5 mínútur; síðasta val vistast aðeins í tækinu.
 - Eftir Byrja birtist hljóðlaus 3–2–1 niðurtalning fyrir ofan formið. Formið stendur kyrrt þar til henni lýkur. Æfingatíminn 1–5 mínútur byrjar eftir niðurtalningu. Enda eða bakktakki hættir einnig við niðurtalningu; falinn flipi setur hana í hlé.
 - Fyrsti skjár: velja æfingu og tíma, síðan Áfram.
