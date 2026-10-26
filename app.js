@@ -5,6 +5,8 @@ let saved = {}; try { saved = JSON.parse(localStorage.getItem('ondun-settings'))
 let mode = saved.mode === 'equal' ? 'equal' : 'box';
 let minutes = [1,2,3,4,5].includes(saved.minutes) ? saved.minutes : 1;
 let soundEnabled=saved.sound!==false;
+let volume=typeof saved.volume==='number'&&Number.isFinite(saved.volume)?Math.max(0,Math.min(1,saved.volume)):.2;
+let previewId=0,previewTimer=0;
 const breathAudio=new BreathingAudio();
 let audioReady=false, sessionId=0;
 let countdownElapsed=0, countdownAnchor=0;
@@ -15,10 +17,16 @@ function configure() {
  document.querySelectorAll('[data-minutes]').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.minutes) === minutes)));
  $('box-visual').hidden = mode !== 'box'; $('balloon-visual').hidden = mode !== 'equal';
  $('sound').checked=soundEnabled;
- try { localStorage.setItem('ondun-settings', JSON.stringify({mode, minutes, sound:soundEnabled})); } catch {}
+ $('volume').value=Math.round(volume*100);$('volume-value').textContent=`${Math.round(volume*100)}%`;
+ $('volume').disabled=!soundEnabled;$('preview-sound').disabled=!soundEnabled;
+ breathAudio.setVolume(volume);
+ try { localStorage.setItem('ondun-settings', JSON.stringify({mode, minutes, sound:soundEnabled,volume})); } catch {}
+}
+function stopPreview(){
+ previewId++;clearTimeout(previewTimer);breathAudio.stop();$('preview-sound').textContent='Prófa hljóð';
 }
 function reset() {
- sessionId++; breathAudio.stop();
+ sessionId++; stopPreview();
  cancelAnimationFrame(frame); status='idle'; elapsed=0; lastPhase=-1;
  $('phase').textContent=''; $('action').textContent='Byrja';
  countdownElapsed=0;$('countdown').hidden=true;$('countdown').textContent='';
@@ -95,7 +103,17 @@ async function start(){
  audioReady=prepared;
  beginCountdown();
 }
-$('sound').addEventListener('change',()=>{soundEnabled=$('sound').checked;configure();});
+$('sound').addEventListener('change',()=>{soundEnabled=$('sound').checked;if(!soundEnabled)stopPreview();configure();});
+$('volume').addEventListener('input',()=>{volume=Number($('volume').value)/100;configure();});
+$('preview-sound').addEventListener('click',async()=>{
+ if($('preview-sound').textContent==='Stöðva hljóð'){stopPreview();return;}
+ const preview=++previewId;$('preview-sound').textContent='Stöðva hljóð';
+ const ready=await breathAudio.prepare();
+ if(preview!==previewId)return;
+ if(!ready){$('preview-sound').textContent='Prófa hljóð';return;}
+ breathAudio.play('equal',8);
+ previewTimer=setTimeout(stopPreview,8100);
+});
 $('choices').addEventListener('submit',event=>{event.preventDefault();enterFullscreen();location.hash='aefing';});
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.mode;configure();}));
 document.querySelectorAll('[data-minutes]').forEach(b=>b.addEventListener('click',()=>{minutes=Number(b.dataset.minutes);configure();}));
@@ -106,6 +124,7 @@ $('action').addEventListener('click',()=>{
 window.addEventListener('hashchange',route);
 // Hidden tabs pause silently; returning continues from the same point.
 document.addEventListener('visibilitychange',()=>{
+ if(document.hidden&&!$('selection-screen').hidden)stopPreview();
  if(document.hidden&&status==='countdown'){
   countdownElapsed+=(performance.now()-countdownAnchor)/1000;
   status='countdown-suspended';cancelAnimationFrame(frame);
