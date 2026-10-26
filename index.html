@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="is">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#dfede8"><meta name="description" content="Stutt öndunarstund fyrir skóladaginn. Kassaöndun og jöfn öndun í 1–5 mínútur.">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Öndun">
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icons/icon-192.png"><link rel="manifest" href="./manifest.webmanifest"><link rel="stylesheet" href="./style.css">
+<title>Öndun · Stund fyrir þig</title>
+</head>
+<body>
+<header><a class="brand" href="./" aria-label="Öndun, upphaf"><span aria-hidden="true">◌</span> Öndun</a><div class="header-actions"><button id="fullscreen" class="quiet">Fylla skjá</button><button id="install" class="quiet">Setja upp app</button></div></header>
+<main>
+<section class="intro"><p class="eyebrow">LÍTIL PÁSA Í SKÓLADEGINUM</p><h1>Stund fyrir þig.</h1><p>Finndu þægilega stöðu. Fylgdu forminu og andaðu mjúklega.</p></section>
+<section class="practice" aria-label="Öndunaræfing">
+<div class="setup" id="setup"><fieldset><legend>Veldu öndun</legend><div class="segmented"><button type="button" data-mode="box" aria-pressed="true"><span aria-hidden="true">□</span> Kassaöndun</button><button type="button" data-mode="equal" aria-pressed="false"><span aria-hidden="true">○</span> Jöfn öndun</button></div></fieldset>
+<fieldset class="duration"><legend>Hversu lengi?</legend><div class="minutes" aria-label="Lengd æfingar"><button data-minutes="1" aria-pressed="true">1 mín</button><button data-minutes="2" aria-pressed="false">2 mín</button><button data-minutes="3" aria-pressed="false">3 mín</button><button data-minutes="4" aria-pressed="false">4 mín</button><button data-minutes="5" aria-pressed="false">5 mín</button></div></fieldset></div>
+<div class="visual" id="visual">
+<div id="box-visual" class="box-visual" aria-hidden="true"><span class="edge top" data-phase="0">Anda inn</span><span class="edge right" data-phase="1">Halda</span><span class="edge bottom" data-phase="2">Anda út</span><span class="edge left" data-phase="3">Halda</span><svg viewBox="0 0 320 320"><rect x="28" y="28" width="264" height="264" rx="0" class="track"/><path id="trail" d="M28 28 H292 V292 H28 Z" pathLength="1"/><circle id="dot" cx="28" cy="28" r="9"/></svg></div>
+<div id="balloon-visual" class="balloon-visual" aria-hidden="true" hidden><div class="balloon" id="balloon"><span class="shine"></span><span class="knot"></span><svg class="string" viewBox="0 0 40 75"><path d="M20 0 C0 25 40 40 20 75"/></svg></div></div>
+<div class="instruction"><p id="phase" role="status" aria-live="polite">Tilbúin?</p><span id="count" aria-hidden="true">4</span></div></div>
+<p id="rhythm" class="rhythm">4 sek. inn · 4 halda · 4 út · 4 halda</p>
+<div class="timer-row"><span id="state-label">Þín stund</span><span id="remaining" role="timer" aria-label="Tími eftir">1:00</span></div><progress id="progress" max="60" value="0" aria-label="Framvinda æfingar"></progress>
+<div class="controls"><button id="start" class="primary">Byrja æfingu <span aria-hidden="true">→</span></button><button id="stop" class="quiet" hidden>Ljúka æfingu</button></div>
+<p class="gentle">Andaðu eins og þér líður vel. Þú mátt alltaf sleppa því að halda.</p>
+</section>
+<footer>Engin krafa. Enginn flýtir. Bara ein öndun í einu.</footer>
+</main>
+<dialog id="install-help"><h2>Öndun sem app</h2><p id="install-message">Opnaðu valmynd Chrome eða Edge og veldu að setja Öndun upp sem app. Í iPhone eða iPad: opnaðu í Safari, ýttu á Deila og veldu „Bæta á heimaskjá“.</p><p>Eftir fyrstu opnun og vistun virkar æfingin líka án nets.</p><button id="close-help" class="primary">Loka</button></dialog>
+<script type="module" src="./app.js"></script>
+</body></html>
