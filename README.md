@@ -4,7 +4,7 @@ Létt íslenskt öndunarforrit fyrir skóladaginn, án innskráningar, auglýsin
 
 - Kassaöndun: 4 sekúndur inn, halda 4, út 4, halda 4. Punktur fylgir hliðum kassans réttsælis.
 - Jöfn öndun: 4 sekúndur inn og 4 út. Blaðra stækkar og minnkar með önduninni.
-- Mjúk öndunarhljóð með ólíkum hljóm við innöndun og útöndun. Algjör þögn í öndunarhléum. Hljóð er sjálfvalið en má slökkva á valskjá; valið vistast í tækinu. Notaðar eru raunverulegar upptökur af manni sem andar inn og út, aðlagaðar að fjögurra sekúndna takti án þess að breyta tónhæð. Þær eru vistaðar með appinu og virka án nets; appið notar ekki hljóðnema. Uppruni, CC0-leyfi og vinnsla eru skráð í [sounds/SOURCES.md](sounds/SOURCES.md). Hljóð og mynd nota sömu klukku meðan hljóðið spilar. Hljóð stöðvast við Enda, lok tíma, bakktakka og falinn flipa.
+- Mjúkur bjöllutónn við upphaf innöndunar (660 Hz) og lægri við upphaf útöndunar (528 Hz). Hver tónn dofnar á 1,8 sekúndum; algjör þögn í öndunarhléum. Hljóðmerki eru sjálfvalin en má slökkva á valskjá; valið vistast í tækinu. Tónarnir eru búnir til staðbundið með Web Audio og virka án nets. Hljóð og mynd nota sömu klukku. Hljóð stöðvast við Enda, lok tíma, bakktakka og falinn flipa. Þegar haldið er áfram í miðju öndunarskrefi bíður næsta hljóðmerkis þar til næsta inn- eða útöndun hefst.
 - Lengd 1–5 mínútur; síðasta val vistast aðeins í tækinu.
 - Fyrsti skjár: velja æfingu og tíma, síðan Áfram.
 - Æfingaskjár (#aefing): aðeins öndunarform, stutt leiðsögn um núverandi skref og lítill Byrja-hnappur í neðra hægra horni. Eftir upphaf er Enda eini hnappurinn.

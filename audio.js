@@ -1,49 +1,55 @@
-// Real human breathing recordings. Source and CC0 provenance: sounds/SOURCES.md.
-export function scheduleBreaths(context,buffers,mode,total,offset=0,when=context.currentTime) {
+// Soft bell cues made locally with Web Audio; no recordings or network requests.
+export function makeBell(context,frequency){
+ const duration=1.8;
+ const buffer=context.createBuffer(1,Math.ceil(context.sampleRate*duration),context.sampleRate);
+ const data=buffer.getChannelData(0);
+ for(let i=0;i<data.length;i++){
+  const t=i/context.sampleRate;
+  const attack=Math.min(1,t/.025);
+  const fade=Math.min(1,(duration-t)/.25);
+  const fundamental=.28*Math.sin(2*Math.PI*frequency*t)*Math.exp(-t/.55);
+  const overtone=.055*Math.sin(2*Math.PI*frequency*2.01*t)*Math.exp(-t/.3);
+  data[i]=(fundamental+overtone)*attack*fade;
+ }
+ data[data.length-1]=0;
+ return buffer;
+}
+export function scheduleBreaths(context,buffers,mode,total,offset=0,when=context.currentTime){
  const nodes=[];
- for(let phase=Math.floor(offset/4);phase*4<total;phase++){
+ for(let phase=Math.ceil(offset/4);phase*4<total;phase++){
   const index=phase%(mode==='box'?4:2);
-  if(mode==='box' && (index===1||index===3))continue;
-  const from=Math.max(offset,phase*4),to=Math.min(total,(phase+1)*4);
-  if(to<=from)continue;
-  const at=when+from-offset,duration=to-from;
+  if(mode==='box'&&(index===1||index===3))continue;
+  const at=when+phase*4-offset;
   const source=context.createBufferSource();
   source.buffer=index===0?buffers.inhale:buffers.exhale;
+  const duration=Math.min(source.buffer.duration,total-phase*4);
+  if(duration<=0)continue;
   const gain=context.createGain();
-  // Brief edge fades avoid clicks when resuming midway through a recording.
-  const fade=Math.min(.02,duration/3);
-  gain.gain.setValueAtTime(0,at);
-  gain.gain.linearRampToValueAtTime(.85,at+fade);
+  gain.gain.setValueAtTime(.85,at);
+  // Also fade if the overall session cuts a bell short.
+  const fade=Math.min(.02,duration/2);
   gain.gain.setValueAtTime(.85,at+duration-fade);
   gain.gain.linearRampToValueAtTime(0,at+duration);
   source.connect(gain).connect(context.destination);
   source.onended=()=>{source.disconnect();gain.disconnect();};
-  source.start(at,from-phase*4,duration);source.stop(at+duration);
+  source.start(at,0,duration);source.stop(at+duration);
   nodes.push(source);
  }
  return nodes;
 }
 export class BreathingAudio {
- constructor(){this.context=null;this.buffers=null;this.loading=null;this.nodes=[];this.active=false;}
+ constructor(){this.context=null;this.buffers=null;this.nodes=[];this.active=false;}
  async prepare(){
   try{
    const Audio=globalThis.AudioContext||globalThis.webkitAudioContext;
    if(!Audio)return false;
-   if(!this.context)this.context=new Audio();
-   // Resume immediately in the click handler, before waiting for file loading.
-   const resumed=this.context.state==='running'?Promise.resolve():this.context.resume().catch(()=>{});
-   if(!this.buffers){
-    if(!this.loading)this.loading=Promise.all(['inhale','exhale'].map(async name=>{
-     const response=await fetch(new URL(`./sounds/${name}.wav`,import.meta.url));
-     if(!response.ok)throw new Error('Breathing recording unavailable');
-     return this.context.decodeAudioData(await response.arrayBuffer());
-    }));
-    const [inhale,exhale]=await this.loading;
-    this.buffers={inhale,exhale};
+   if(!this.context){
+    this.context=new Audio();
+    this.buffers={inhale:makeBell(this.context,660),exhale:makeBell(this.context,528)};
    }
-   await resumed;
+   if(this.context.state!=='running')await this.context.resume();
    return this.context.state==='running';
-  }catch{this.loading=null;return false;}
+  }catch{return false;}
  }
  play(mode,total,offset=0){
   this.stop();
